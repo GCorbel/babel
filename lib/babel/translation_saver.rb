@@ -1,24 +1,43 @@
 module Babel
   class TranslationSaver
-    def initialize(hash)
-      @hash = hash
-    end
-
     def call
-      store_translation_in_memory
-      write_in_file
+      I18n.available_locales.each do |locale|
+        write_in_file(locale)
+      end
+      clear_temp_translations
     end
 
     private
-    def store_translation_in_memory
-      I18n.backend.store_translations(I18n.locale, @hash)
+    def clear_temp_translations
+      Babel::TEMP_TRANSLATIONS.clear
     end
 
-    def write_in_file
-      path = "#{Rails.root}/config/locales/#{I18n.locale}.yml"
-      exisiting_locales = YAML.load(File.read(path))
-      full_locales = deep_merge(exisiting_locales, @hash)
-      File.open(path, 'w') { |f| f.write(full_locales.to_yaml) }
+    def write_in_file(locale)
+      path = translation_path(locale)
+      existing_translations = read_translations(path)
+      translations = [existing_translations] + new_translations(locale)
+      full_translations = merge(translations)
+      File.open(path, 'w') { |f| f.write(full_translations.to_yaml) }
+    end
+
+    def merge(translations)
+      full_translations = {}
+      translations.each do |translation|
+        full_translations = deep_merge(full_translations, translation)
+      end
+      full_translations
+    end
+
+    def read_translations(path)
+      YAML.load(File.read(path)).to_hash
+    end
+
+    def translation_path(locale)
+      "#{Rails.root}/config/locales/#{locale}.yml"
+    end
+
+    def new_translations(locale)
+      Babel::TEMP_TRANSLATIONS.map {|t| t if t.keys.first == locale.to_s}.compact
     end
 
     def deep_merge(first_hash, other_hash, &block)

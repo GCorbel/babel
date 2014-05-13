@@ -11,6 +11,14 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
   config.infer_base_class_for_anonymous_controllers = false
   config.order = "random"
+
+  config.after do
+    I18n.locale = :en
+    Babel::TEMP_TRANSLATIONS = []
+    FileUtils.cp('spec/fixtures/en.yml', 'spec/dummy/config/locales/')
+    FileUtils.cp('spec/fixtures/fr.yml', 'spec/dummy/config/locales/')
+    I18n.reload!
+  end
 end
 
 Capybara.javascript_driver = :webkit

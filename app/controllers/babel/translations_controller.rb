@@ -4,5 +4,10 @@ module Babel
       Translation.new(params[:translation]).save
       render json: "ok"
     end
+
+    def create
+      TranslationSaver.new.call
+      render json: 'ok'
+    end
   end
 end

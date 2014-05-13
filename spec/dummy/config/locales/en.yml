@@ -2,6 +2,4 @@
 en:
   pages:
     home:
-      welcome_message: Hello!
-node1:
-  node2: value
+      welcome_message: "Hello!"

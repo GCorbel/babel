@@ -1,3 +1,3 @@
 Babel::Engine.routes.draw do
-  resources :translations, only: :update, id: /[^\/]*/
+  resources :translations, only: [:update, :create], id: /[^\/]*/
 end

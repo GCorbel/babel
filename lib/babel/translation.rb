@@ -5,11 +5,12 @@ module Babel
     end
 
     def save
-      TranslationSaver.new(to_hash).call
+      I18n.backend.store_translations(I18n.locale, hash)
+      TEMP_TRANSLATIONS.push(I18n.locale.to_s => hash)
     end
 
     private
-    def to_hash
+    def hash
       return @hash if @hash
       @hash = {}
       @hash[keys.pop.to_s] = @params[:value]
@@ -22,7 +23,7 @@ module Babel
     end
 
     def keys
-      @keys ||= [I18n.locale.to_s] + @params[:id].split('.')
+      @keys ||= @params[:id].split('.')
     end
   end
 end

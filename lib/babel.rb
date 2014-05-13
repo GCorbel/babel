@@ -4,6 +4,8 @@ require "babel/translation"
 require "babel/translation_saver"
 
 module Babel
+  TEMP_TRANSLATIONS = []
+
   class Engine < Rails::Engine
     isolate_namespace Babel
   end
